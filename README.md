@@ -1,2 +1,2 @@
 # luffy_sdss
-Or what do you think about that?
+I think it's a nice idea
