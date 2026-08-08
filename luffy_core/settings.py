@@ -88,7 +88,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "luffy_core.wsgi.application"
 
 
-# Databas
+# Database
 # If we are on Render, this variable will exist
 DATABASE_URL = os.environ.get('DATABASE_URL')
 

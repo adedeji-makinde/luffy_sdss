@@ -15,21 +15,21 @@ export default function MapDashboard() {
   const [smartStops, setSmartStops] = useState([]);
 
   useEffect(() => {
-    axios.get('https://laughing-happiness-q774gxq7xq5q2x6jq-8000.app.github.dev/api/student-locations/')
+    axios.get('https://luffy-sdss-backend.onrender.com/api/student-locations/')
       .then(res => setStudents(res.data.features || []))
       .catch(err => console.error(err));
 
-    axios.get('https://laughing-happiness-q774gxq7xq5q2x6jq-8000.app.github.dev/api/hazard-zones/')
+    axios.get('https://luffy-sdss-backend.onrender.com/api/hazard-zones/')
       .then(res => setHazards(res.data.features || []))
       .catch(err => console.error(err));
 
-    axios.get('https://laughing-happiness-q774gxq7xq5q2x6jq-8000.app.github.dev/api/bus-routes/')
+    axios.get('https://luffy-sdss-backend.onrender.com/api/bus-routes/')
       .then(res => setBusRoutes(res.data.features || []))
       .catch(err => console.error(err));
   }, []);
 
   const checkHazardIntersections = () => {
-    axios.get('https://laughing-happiness-q774gxq7xq5q2x6jq-8000.app.github.dev/api/student-locations/in-hazard-zones/')
+    axios.get('https://luffy-sdss-backend.onrender.com/api/student-locations/in-hazard-zones/')
       .then(res => {
         const dangerIds = res.data.features.map(student => student.id);
         setAtRiskIds(dangerIds);
@@ -39,14 +39,14 @@ export default function MapDashboard() {
 
   const handleStudentClick = (studentId) => {
     setNearestRouteData(null);
-    axios.get(`https://laughing-happiness-q774gxq7xq5q2x6jq-8000.app.github.dev/api/student/${studentId}/nearest-route/`)
+    axios.get(`https://luffy-sdss-backend.onrender.com/api/student/${studentId}/nearest-route/`)
       .then(res => setNearestRouteData(res.data))
       .catch(err => setNearestRouteData({ error: "No routes available" }));
   };
 
   // 2. New Function to call our K-Means AI endpoint
   const runAIOptimization = () => {
-    axios.get('https://laughing-happiness-q774gxq7xq5q2x6jq-8000.app.github.dev/api/smart-stops/')
+    axios.get('https://luffy-sdss-backend.onrender.com/api/smart-stops/')
       .then(res => {
         if (res.data.smart_stops) {
           setSmartStops(res.data.smart_stops);

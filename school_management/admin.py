@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.forms.widgets import OSMWidget
-from .models import LocationGIS, HazardZone, BusRoute
+from .models import LocationGIS, HazardZone, BusRoute, Student
 
 # 1. Force the POINT tool for Students
 @admin.register(LocationGIS)
@@ -53,3 +53,5 @@ class BusRouteAdmin(admin.ModelAdmin):
             'default_zoom': 11,
         })},
     }
+
+admin.site.register(Student)
