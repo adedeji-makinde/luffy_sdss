@@ -11,21 +11,28 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url
+from dotenv import load_dotenv
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv() # This loads my secret environment variables
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-s54s!k7t^b5!7yq(5=8&it^qx+vsblmdbo5hpe4+6cirjm6_f7"
+# Use the secret key from the environment, or a fallback for local development
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-fallback-key-here')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Turn off DEBUG mode if we are on the live server
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+# Allow traffic from my local Codespace and my future Render URL
+ALLOWED_HOSTS = ['*'] # We can restrict this to my specific Render URL later for maximum security
 
 
 # Application definition
@@ -51,8 +58,9 @@ INSTALLED_APPS = [
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-     'corsheaders.middleware.CorsMiddleware', 
+    'whitenoise.middleware.WhiteNoiseMiddleware',  
     "django.contrib.sessions.middleware.SessionMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -80,19 +88,32 @@ TEMPLATES = [
 WSGI_APPLICATION = "luffy_core.wsgi.application"
 
 
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+# Databas
+# If we are on Render, this variable will exist
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'luffy_sdss',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',  
-        'HOST': 'localhost',
-        'PORT': '5432',
+if DATABASE_URL:
+    # - PRODUCTION (RENDER) SETTINGS -
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            engine='django.contrib.gis.db.backends.postgis'
+        )
     }
-}
+else:
+    # - LOCAL (CODESPACE) SETTINGS -
+    # Replace this dictionary with your ORIGINAL database settings!
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': 'luffy_sdss',      
+            'USER': 'postgres',      
+            'PASSWORD': 'postgres',       
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -130,4 +151,5 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
